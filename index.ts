@@ -3,7 +3,7 @@ const h : number = window.innerHeight
 const parts : number = 4
 const scGap : number = 0.02 / parts 
 const steps : number = 1 + parts   
-const strokeFactor : number = 20 
+const strokeFactor : number = 90 
 const boxSizeFactror : number = 5 
 const colors : Array<string> = [
     "#f44336",
@@ -43,17 +43,24 @@ class DrawingUtil {
     static drawBoxJumpWithinStep(context : CanvasRenderingContext2D, scale : number) {
         const gap : number = h / (steps + 1)
         const sf : number = ScaleUtil.sinify(scale)
-        const scDiv : number = 1 / parts 
-        const currJ = Math.floor(sf / scDiv)
-        var x = 0, y = gap / 2, rot = 90 * ScaleUtil.divideScale(sf, currJ, parts)
+        const sf1 : number = ScaleUtil.divideScale(sf, 0, 2)
+        const sf2 : number = ScaleUtil.divideScale(sf, 1, 2)
+        const scDiv : number = 1 / steps 
+        const currJ = Math.floor(sf2 / scDiv)
+        const sfj = ScaleUtil.divideScale(sf2, currJ, steps)
+        var x = 0, y = gap, deg = rot * ScaleUtil.divideScale(sfj, 0, 2)
         for (var j = 0; j < steps; j++) {
-            x += (gap) * j 
-            y += gap 
-            DrawingUtil.drawLine(context, 0, y, x, y)
+            const sfj : number = ScaleUtil.divideScale(sf2, j, steps)
+            x += (gap * Math.floor(sfj)) 
+            y += (gap * ScaleUtil.divideScale(sfj, 1, 2))  
+        }
+        for (var j = 0; j < steps; j++) {
+            DrawingUtil.drawLine(context, 0, gap + gap * j, gap * (j + 1) * sf1, gap + gap * j)
         }
         context.save()
-        context.translate(x, y)
-        context.fillRect(-gap, 0, gap, gap)
+        context.translate(x + gap, y)
+        context.rotate(deg)
+        context.fillRect(-gap, -gap * sf1, gap, gap * sf1)
         context.restore()
     }
 
