@@ -205,3 +205,25 @@ class BoxJumpWithinStep {
         this.curr.startUpdating(cb)
     }
 }
+
+class Renderer {
+
+    curr : BoxJumpWithinStep = new BoxJumpWithinStep()
+    animator : Animator = new Animator()
+
+    render(context : CanvasRenderingContext2D) {
+        this.curr.draw(context)
+    }
+
+    handleTap(cb : Function) {
+        this.curr.startUpdating(() => {
+            this.animator.start(() => {
+                cb()
+                this.curr.update(() => {
+                    this.animator.stop()
+                    cb()
+                })
+            })
+        })
+    }
+}
