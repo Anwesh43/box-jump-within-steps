@@ -12,6 +12,7 @@ const colors : Array<string> = [
     "#006064",
     "#FFD600"
 ]
+const delay : number = 20
 const backColor : string = "#BDBDBD"
 const rot : number = Math.PI / 2
 
@@ -116,6 +117,26 @@ class State {
         if (this.dir == 0) {
             this.dir = 1 - 2 * this.prevScale 
             cb()
+        }
+    }
+}
+
+class Animator {
+
+    animated : boolean = false 
+    interval : number 
+
+    start(cb : Function) {
+        if (!this.animated) {
+            this.animated = true 
+            this.interval = setInterval(cb, delay)
+        }
+    }
+
+    stop() {
+        if (this.animated) {
+            this.animated = false 
+            clearInterval(this.interval)
         }
     }
 }
