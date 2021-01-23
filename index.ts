@@ -1,8 +1,8 @@
 const w : number = window.innerWidth
 const h : number = window.innerHeight 
-const parts : number = 5 
-const scGap : number = 0.02 / 5 
-const steps : number = 4 
+const parts : number = 4
+const scGap : number = 0.02 / parts 
+const steps : number = 1 + parts   
 const strokeFactor : number = 20 
 const boxSizeFactror : number = 5 
 const colors : Array<string> = [
@@ -27,5 +27,40 @@ class ScaleUtil {
 
     static sinify(scale : number) : number {
         return Math.sin(scale * Math.PI)
+    }
+}
+
+class DrawingUtil {
+
+    static drawLine(context : CanvasRenderingContext2D, x1 : number, y1 : number, x2 : number, y2 : number) {
+        context.beginPath()
+        context.moveTo(x1, y1)
+        context.lineTo(x2, y2)
+        context.stroke()
+    }
+
+    static drawBoxJumpWithinStep(context : CanvasRenderingContext2D, scale : number) {
+        const gap : number = h / (steps + 1)
+        const sf : number = ScaleUtil.sinify(scale)
+        const scDiv : number = 1 / parts 
+        const currJ = Math.floor(sf / scDiv)
+        var x = 0, y = gap / 2, rot = 90 * ScaleUtil.divideScale(sf, currJ, parts)
+        for (var j = 0; j < steps; j++) {
+            x += (gap) * j 
+            y += gap 
+            DrawingUtil.drawLine(context, 0, y, x, y)
+        }
+        context.save()
+        context.translate(x, y)
+        context.fillRect(-gap, 0, gap, gap)
+        context.restore()
+    }
+
+    static drawBJWSNode(context : CanvasRenderingContext2D, i : number, scale : number) {
+        context.lineCap = 'round'
+        context.lineWidth = Math.min(w, h) / strokeFactor 
+        context.fillStyle = colors[i]
+        context.strokeStyle = colors[i]
+        DrawingUtil.drawBoxJumpWithinStep(context, scale)
     }
 }
